@@ -1,13 +1,12 @@
-import angular from 'angular';
+import angular, {ICompileService, IRootScopeService} from 'angular';
 
-const app = angular.module('app', []);
+const $injector = angular.injector(['ng']);
 
-app.directive('myDirective', function () {
-  return {
-    template: '<div class="bg-yellow">{{ message }}</div>',
-    controller: function ($scope) {
-      $scope.message = "Hello, angularjs"
-    },
-    restrict: 'A'
-  }
-});
+$injector.invoke(($compile: ICompileService, $rootScope: IRootScopeService & { hello: string }) => {
+  $rootScope.hello = 'Hello!!'
+  const $dom = $compile('<div>{{ hello }} -- {{1+2}}</div>')($rootScope)
+  // necessary to calculate the expressions
+  $rootScope.$digest();
+
+  document.getElementById('main')!.appendChild($dom[0]);
+})
